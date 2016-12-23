@@ -45,6 +45,7 @@ func (l *logger) Setup(config Config) {
 	l.config = config
 	l.SetLevel(config.Level())
 	l.ConsoleOutput(config.ConsoleOutput())
+	l.LogToFile(config.LogFile())
 	l.SetFormat(config.Format())
 }
 
@@ -70,6 +71,14 @@ func (l *logger) ConsoleOutput(enable bool) {
 	l.entry.Logger.Out = ioutil.Discard
 	if enable {
 		l.entry.Logger.Hooks.Add(hooks.NewConsoleHook())
+	}
+}
+
+// Log to a file
+func LogToFile(path string) { global.LogToFile(path) }
+func (l *logger) LogToFile(path string) {
+	if path != "" {
+		l.entry.Logger.Hooks.Add(hooks.NewFileHook(path))
 	}
 }
 
