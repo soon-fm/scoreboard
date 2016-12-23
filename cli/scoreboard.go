@@ -41,6 +41,8 @@ func scoreboardPreRunFn(cmd *cobra.Command, args []string) {
 	// Read in config from file
 	configPath, _ := cmd.Flags().GetString("config")
 	if err := config.Read(configPath); err != nil {
+		logger.ConsoleOutput(true)
+		logger.SetFormat("text")
 		logger.WithError(err).Warn("unable to load config file")
 	}
 	// Setup Global Logger
