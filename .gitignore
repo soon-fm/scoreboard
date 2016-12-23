@@ -1,0 +1,11 @@
+# OSX
+.DS_Store
+
+# Build
+.build
+
+# Binary
+/scoreboard
+
+# Developer
+.env
