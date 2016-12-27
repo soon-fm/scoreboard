@@ -5,9 +5,11 @@ package logger
 import (
 	"io/ioutil"
 	"strings"
+	"time"
 
 	"scoreboard/logger/formatters"
 	"scoreboard/logger/hooks"
+	"scoreboard/version"
 
 	"github.com/sirupsen/logrus"
 )
@@ -47,6 +49,8 @@ func (l *logger) Setup(config Config) {
 	l.ConsoleOutput(config.ConsoleOutput())
 	l.LogToFile(config.LogFile())
 	l.SetFormat(config.Format())
+	l.WithVersion()
+	l.WithBuildTime()
 }
 
 // Set the log level of the logger
@@ -178,6 +182,29 @@ func (l *logger) Fatal(msg string, v ...interface{}) {
 func Panic(msg string, v ...interface{}) { global.Panic(msg, v...) }
 func (l *logger) Panic(msg string, v ...interface{}) {
 	l.entry.Panicf(msg, v...)
+}
+
+// Log Version
+func WithVersion() { global.WithVersion() }
+func (l *logger) WithVersion() {
+	v, err := version.Version()
+	if err != nil {
+		v = "unknown"
+	}
+	l.entry = l.entry.Logger.WithField("version", v)
+}
+
+// Log Build Time
+func WithBuildTime() { global.WithBuildTime() }
+func (l *logger) WithBuildTime() {
+	var tStr string
+	t, err := version.BuildTime()
+	if err == nil {
+		tStr = t.Format(time.RFC3339)
+	} else {
+		tStr = "unknown"
+	}
+	l.entry = l.entry.Logger.WithField("buildTime", tStr)
 }
 
 // Exported logger constructor, requiring a config type that
