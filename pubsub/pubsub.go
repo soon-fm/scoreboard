@@ -1,7 +1,7 @@
 package pubsub
 
 type Closer interface {
-	Close() error
+	Close()
 }
 
 type Subscriber interface {

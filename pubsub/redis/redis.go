@@ -38,6 +38,8 @@ func (p *PubSub) Subscribe(channels ...string) (<-chan string, error) {
 		return nil, err
 	}
 	go func() {
+		defer logger.Debug("pubsub: exit subscribe goroutine")
+		defer close(p.msgs)
 		for {
 			msg, err := p.pubsub.ReceiveMessage()
 			if err != nil {
@@ -54,17 +56,13 @@ func (p *PubSub) Publish(ch string, msg []byte) error {
 	return nil
 }
 
-func (p *PubSub) Close() error {
+func (p *PubSub) Close() {
 	defer logger.Debug("pubsub: close subscriptions")
-	if p.msgs != nil {
-		close(p.msgs)
-	}
 	if p.pubsub != nil {
 		if err := p.pubsub.Close(); err != nil {
-			return err
+			logger.WithError(err).Error("pubsub: close error")
 		}
 	}
-	return nil
 }
 
 func New(config Config) *PubSub {
