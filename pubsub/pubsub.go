@@ -5,7 +5,7 @@ type Closer interface {
 }
 
 type Subscriber interface {
-	Subscribe(string) (<-chan string, error)
+	Subscribe(...string) (<-chan string, error)
 }
 
 type SubscribeCloser interface {
