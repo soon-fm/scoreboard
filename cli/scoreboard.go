@@ -5,6 +5,7 @@ package cli
 import (
 	"scoreboard/config"
 	"scoreboard/logger"
+	"scoreboard/run"
 
 	"github.com/spf13/cobra"
 )
@@ -51,6 +52,7 @@ func scoreboardPreRunFn(cmd *cobra.Command, args []string) {
 
 // Scoreboard CLI run method
 func scoreboardRunFn(cmd *cobra.Command, args []string) {
+	run.Run()
 }
 
 // Exported exec method called by main
