@@ -49,8 +49,7 @@ func (l *logger) Setup(config Config) {
 	l.ConsoleOutput(config.ConsoleOutput())
 	l.LogToFile(config.LogFile())
 	l.SetFormat(config.Format())
-	l.WithVersion()
-	l.WithBuildTime()
+	l.WithBuild()
 }
 
 // Set the log level of the logger
@@ -184,19 +183,13 @@ func (l *logger) Panic(msg string, v ...interface{}) {
 	l.entry.Panicf(msg, v...)
 }
 
-// Log Version
-func WithVersion() { global.WithVersion() }
-func (l *logger) WithVersion() {
+// Log build details
+func WithBuild() { global.WithBuild() }
+func (l *logger) WithBuild() {
 	v, err := version.Version()
 	if err != nil {
 		v = "unknown"
 	}
-	l.entry = l.entry.Logger.WithField("version", v)
-}
-
-// Log Build Time
-func WithBuildTime() { global.WithBuildTime() }
-func (l *logger) WithBuildTime() {
 	var tStr string
 	t, err := version.BuildTime()
 	if err == nil {
@@ -204,7 +197,10 @@ func (l *logger) WithBuildTime() {
 	} else {
 		tStr = "unknown"
 	}
-	l.entry = l.entry.Logger.WithField("buildTime", tStr)
+	l.entry = l.entry.Logger.WithFields(logrus.Fields{
+		"version":   v,
+		"buildTime": tStr,
+	})
 }
 
 // Exported logger constructor, requiring a config type that
