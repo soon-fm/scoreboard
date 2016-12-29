@@ -185,6 +185,42 @@
 			"revisionTime": "2016-12-16T03:07:57Z"
 		},
 		{
+			"checksumSHA1": "QcxsHlRRfj/9/giAFUV1kt/pB5A=",
+			"path": "gopkg.in/redis.v5",
+			"revision": "b7bae3a78050e2e7ec2130a05cde296a9ff2e9c0",
+			"revisionTime": "2016-12-22T12:50:47Z"
+		},
+		{
+			"checksumSHA1": "MQzDJNByeq6grpHXL0iD9S996h4=",
+			"path": "gopkg.in/redis.v5/internal",
+			"revision": "b7bae3a78050e2e7ec2130a05cde296a9ff2e9c0",
+			"revisionTime": "2016-12-22T12:50:47Z"
+		},
+		{
+			"checksumSHA1": "2Ek4SixeRSKOX3mUiBMs3Aw+Guc=",
+			"path": "gopkg.in/redis.v5/internal/consistenthash",
+			"revision": "b7bae3a78050e2e7ec2130a05cde296a9ff2e9c0",
+			"revisionTime": "2016-12-22T12:50:47Z"
+		},
+		{
+			"checksumSHA1": "rJYVKcBrwYUGl7nuuusmZGrt8mY=",
+			"path": "gopkg.in/redis.v5/internal/hashtag",
+			"revision": "b7bae3a78050e2e7ec2130a05cde296a9ff2e9c0",
+			"revisionTime": "2016-12-22T12:50:47Z"
+		},
+		{
+			"checksumSHA1": "yLZQUKNxXzwGlzfXhWC0Mwme2nw=",
+			"path": "gopkg.in/redis.v5/internal/pool",
+			"revision": "b7bae3a78050e2e7ec2130a05cde296a9ff2e9c0",
+			"revisionTime": "2016-12-22T12:50:47Z"
+		},
+		{
+			"checksumSHA1": "k7baRE424licGN0aZw9JPxfyVNg=",
+			"path": "gopkg.in/redis.v5/internal/proto",
+			"revision": "b7bae3a78050e2e7ec2130a05cde296a9ff2e9c0",
+			"revisionTime": "2016-12-22T12:50:47Z"
+		},
+		{
 			"checksumSHA1": "12GqsW8PiRPnezDDy0v4brZrndM=",
 			"path": "gopkg.in/yaml.v2",
 			"revision": "a5b47d31c556af34a302ce5d659e6fea44d90de0",
