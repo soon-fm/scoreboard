@@ -1,6 +1,33 @@
 # Example Configuration File
+
+# Logging Configuration
 [log]
 level = "info" # Logging verbosity (debug, info, warn, error)
 logfile = "/path/to/file.log" # Absolute path to log file
 format = "json" # Logging format (text, json, logstash)
 console_output = true # Enable or disable console log output
+
+# Logstash Configuration
+# Only used if log.format == "logstash"
+[logstash]
+type = "foo" # Override logstash type
+
+# Redis
+# Used for connecting to Redis services
+[redis]
+address = "localhost:6379"  # Address of redis server in host:port format
+password = "foo" # Optional, remove or leave blank
+db = 0 # Optional DB number, remove or leave blank
+
+# Pub/Sub Events
+[pubsub]
+events = [
+    {
+        event = "play",
+        points = 1
+    },
+    {
+        event = "stop",
+        points = -1
+    },
+]
