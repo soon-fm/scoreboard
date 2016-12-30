@@ -10,6 +10,9 @@ import (
 	"scoreboard/pubsub/redis"
 )
 
+// Run package logger
+var log = logger.WithField("pkg", "run")
+
 // Application exit OS signals
 var quitSignals = []os.Signal{
 	syscall.SIGINT,
@@ -20,6 +23,15 @@ var quitSignals = []os.Signal{
 // Central run function
 func Run() {
 	ps := redis.New(config.NewRedisConfig())
+	msgs, err := ps.Subscribe("foo")
+	if err != nil {
+		log.WithError(err).Fatal("failed to subscribe")
+	}
+	go func() {
+		for msg := range msgs {
+			log.Debug(msg)
+		}
+	}()
 	defer ps.Close()
 	UntilQuit()
 }

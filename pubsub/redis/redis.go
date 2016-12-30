@@ -9,6 +9,9 @@ import (
 	redis "gopkg.in/redis.v5"
 )
 
+// Package logger
+var log = logger.WithField("pkg", "pubsub/redis")
+
 // Config interface, please see config package for more details
 type Config interface {
 	Address() string
@@ -20,7 +23,6 @@ type PubSub struct {
 	config Config
 	client *redis.Client
 	pubsub *redis.PubSub
-	msgs   chan string
 }
 
 func (p *PubSub) subscribe(channels ...string) error {
@@ -29,27 +31,32 @@ func (p *PubSub) subscribe(channels ...string) error {
 		return err
 	}
 	p.pubsub = pubsub
-	p.msgs = make(chan string)
 	return nil
 }
 
+func (p *PubSub) receiveMessages(ch chan string) {
+	log.Debug("start pub/sub receive")
+	defer log.Debug("exit pub/sub recieve")
+	defer close(ch) // Close the channel on exit
+	for {
+		msg, err := p.pubsub.ReceiveMessage()
+		if err != nil {
+			log.WithError(err).Warn("recieve message error")
+			return
+		}
+		ch <- msg.Payload
+	}
+}
+
 func (p *PubSub) Subscribe(channels ...string) (<-chan string, error) {
+	log.WithField("channels", channels).Debug("pub/sub subscribe")
+	defer log.Debug("exit pub/sub subscribe")
+	ch := make(chan string)
 	if err := p.subscribe(channels...); err != nil {
 		return nil, err
 	}
-	go func() {
-		defer logger.Debug("pubsub: exit subscribe goroutine")
-		defer close(p.msgs)
-		for {
-			msg, err := p.pubsub.ReceiveMessage()
-			if err != nil {
-				logger.WithError(err).Warn("pubsub: recieve message error")
-				return
-			}
-			p.msgs <- msg.Payload
-		}
-	}()
-	return (<-chan string)(p.msgs), nil
+	go p.receiveMessages(ch)
+	return (<-chan string)(ch), nil
 }
 
 func (p *PubSub) Publish(ch string, msg []byte) error {
@@ -57,10 +64,10 @@ func (p *PubSub) Publish(ch string, msg []byte) error {
 }
 
 func (p *PubSub) Close() {
-	defer logger.Debug("pubsub: close subscriptions")
+	defer log.Debug("close subscriptions")
 	if p.pubsub != nil {
 		if err := p.pubsub.Close(); err != nil {
-			logger.WithError(err).Error("pubsub: close error")
+			log.WithError(err).Error("close error")
 		}
 	}
 }
