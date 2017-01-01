@@ -29,7 +29,10 @@ func Run() {
 	}
 	go func() {
 		for msg := range msgs {
-			log.Debug(msg)
+			log.WithFields(logger.F{
+				"topic":   msg.Topic(),
+				"payload": msg.Payload(),
+			}).Debug("received message")
 		}
 	}()
 	defer ps.Close()

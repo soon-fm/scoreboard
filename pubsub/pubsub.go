@@ -1,11 +1,16 @@
 package pubsub
 
+type Message interface {
+	Topic() string
+	Payload() string
+}
+
 type Closer interface {
 	Close()
 }
 
 type Subscriber interface {
-	Subscribe(...string) (<-chan string, error)
+	Subscribe(...string) (<-chan Message, error)
 }
 
 type SubscribeCloser interface {

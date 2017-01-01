@@ -5,6 +5,7 @@ package redis
 
 import (
 	"scoreboard/logger"
+	"scoreboard/pubsub"
 
 	redis "gopkg.in/redis.v5"
 )
@@ -17,6 +18,18 @@ type Config interface {
 	Address() string
 	Password() string
 	DB() int
+}
+
+type Message struct {
+	msg *redis.Message
+}
+
+func (m *Message) Topic() string {
+	return m.msg.Channel
+}
+
+func (m *Message) Payload() string {
+	return m.msg.Payload
 }
 
 type PubSub struct {
@@ -34,7 +47,7 @@ func (p *PubSub) subscribe(channels ...string) error {
 	return nil
 }
 
-func (p *PubSub) receiveMessages(ch chan string) {
+func (p *PubSub) receiveMessages(ch chan pubsub.Message) {
 	log.Debug("start pub/sub receive")
 	defer log.Debug("exit pub/sub recieve")
 	defer close(ch) // Close the channel on exit
@@ -44,19 +57,19 @@ func (p *PubSub) receiveMessages(ch chan string) {
 			log.WithError(err).Warn("recieve message error")
 			return
 		}
-		ch <- msg.Payload
+		ch <- &Message{msg}
 	}
 }
 
-func (p *PubSub) Subscribe(channels ...string) (<-chan string, error) {
+func (p *PubSub) Subscribe(channels ...string) (<-chan pubsub.Message, error) {
 	log.WithField("channels", channels).Debug("pub/sub subscribe")
 	defer log.Debug("exit pub/sub subscribe")
-	ch := make(chan string)
+	ch := make(chan pubsub.Message)
 	if err := p.subscribe(channels...); err != nil {
 		return nil, err
 	}
 	go p.receiveMessages(ch)
-	return (<-chan string)(ch), nil
+	return (<-chan pubsub.Message)(ch), nil
 }
 
 func (p *PubSub) Publish(ch string, msg []byte) error {
