@@ -3,7 +3,6 @@
 package cli
 
 import (
-	"scoreboard/config"
 	"scoreboard/logger"
 	"scoreboard/run"
 
@@ -12,47 +11,36 @@ import (
 
 // Root Cobra CLI command
 var scoreboardCmd = &cobra.Command{
-	Use:              "scoreboard",
-	Short:            "SOON_ FM Scoreboard.",
-	Long:             "Stores the scores of users in the SOON_ FM system.",
-	PersistentPreRun: scoreboardPreRunFn,
-	Run:              scoreboardRunFn,
+	Use:   "scoreboard",
+	Short: "SOON_ FM Scoreboard.",
+	Long:  "Stores the scores of users in the SOON_ FM system.",
+	Run:   scoreboardRunFn,
 }
 
 func init() {
-	// Add CLI Flags
+	// --config/-c Flag
 	scoreboardCmd.PersistentFlags().StringP(
 		"config",
 		"c",
 		"",
 		"Optional absolute path to toml config file")
+	run.BindConfigPathFlag(scoreboardCmd.PersistentFlags().Lookup("config"))
+	// --log-level/-l Flag
 	scoreboardCmd.PersistentFlags().StringP(
 		"log-level",
 		"l",
 		"",
 		"Logging log level. One of 'debug', 'info', 'warn', 'error'")
+	logger.BindLogLevelFlag(scoreboardCmd.PersistentFlags().Lookup("log-level"))
 	// Add Sub Commands
 	scoreboardCmd.AddCommand(versionCmd)
 }
 
-// Scoreboard CLI pre run method, loads in configuration from file
-func scoreboardPreRunFn(cmd *cobra.Command, args []string) {
-	// Bind flags to viper values
-	logger.BindLogLevelFlag(cmd.Flags().Lookup("log-level"))
-	// Read in config from file
-	configPath, _ := cmd.Flags().GetString("config")
-	if err := config.Read(configPath); err != nil {
-		logger.ConsoleOutput(true)
-		logger.SetFormat("text")
-		logger.WithError(err).Warn("unable to load config file")
-	}
-	// Setup Global Logger
-	logger.Setup(logger.NewConfig())
-}
-
 // Scoreboard CLI run method
 func scoreboardRunFn(cmd *cobra.Command, args []string) {
-	run.Run()
+	if err := run.Run(); err != nil {
+		logger.WithError(err).Fatal("runtime error")
+	}
 }
 
 // Exported exec method called by main

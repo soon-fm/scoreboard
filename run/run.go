@@ -3,7 +3,11 @@ package run
 import (
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
+
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 
 	"scoreboard/logger"
 	"scoreboard/pubsub/redis"
@@ -19,8 +23,25 @@ var quitSignals = []os.Signal{
 	syscall.SIGQUIT,
 }
 
+// Configuration defaults
+func init() {
+	viper.SetConfigType("toml")
+	viper.SetConfigName("config")
+	viper.AddConfigPath("/etc/scoreboard")
+	viper.AddConfigPath("$HOME/.config/scoreboard")
+	viper.SetEnvPrefix("scoreboard")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+}
+
 // Central run function
-func Run() {
+func Run() error {
+	// Read configuration
+	if err := ReadConfig(); err != nil {
+		return err
+	}
+	// Setup Logger
+	logger.Setup(logger.NewConfig())
+	// Redis Pub/Sub
 	ps := redis.New(redis.NewConfig())
 	msgs, err := ps.Subscribe("foo")
 	if err != nil {
@@ -36,6 +57,21 @@ func Run() {
 	}()
 	defer ps.Close()
 	UntilQuit()
+	return nil
+}
+
+// Binds config path loading flag to viper
+func BindConfigPathFlag(flag *pflag.Flag) {
+	viper.BindPFlag("config.path", flag)
+}
+
+// Load configuration from file
+func ReadConfig() error {
+	path := viper.GetString("config.path")
+	if _, err := os.Stat(path); err != nil {
+		viper.SetConfigFile(path)
+	}
+	return viper.ReadInConfig()
 }
 
 // Run this method until the passed in os.Signals are triggered

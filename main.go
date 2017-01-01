@@ -10,6 +10,6 @@ import (
 
 func main() {
 	if err := cli.Exec(); err != nil {
-		logger.WithError(err).Fatal("unable to start application")
+		logger.WithError(err).Fatal("runtime error")
 	}
 }

@@ -21,6 +21,12 @@ var log = logrus.New()
 // a new logger for simplicity
 var global = New()
 
+// Logger default setup
+func init() {
+	global.ConsoleOutput(true)
+	global.SetFormat("text")
+}
+
 // A shortform wrapper around logrus.Fields
 type F logrus.Fields
 
@@ -43,10 +49,18 @@ type logger struct {
 func Setup(config Configurer) { global.Setup(config) }
 func (l *logger) Setup(config Configurer) {
 	l.config = config
+	l.DeleteHooks()
 	l.SetLevel(config.Level())
 	l.ConsoleOutput(config.ConsoleOutput())
 	l.LogToFile(config.LogFile())
 	l.SetFormat(config.Format())
+}
+
+// Removes all hooks from the logger, call this before each setup
+func (l *logger) DeleteHooks() {
+	for k, _ := range log.Hooks {
+		delete(log.Hooks, k)
+	}
 }
 
 // Set the log level of the logger

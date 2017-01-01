@@ -28,6 +28,8 @@ func versionRunFn(cmd *cobra.Command, args []string) {
 	if err != nil {
 		fmt.Println(fmt.Sprintf("Build Time: uknown"))
 	} else {
-		fmt.Println(fmt.Sprintf("Build Time: %s", bt.Format("Monday Janurary 2 at 15:04:05")))
+		fmt.Println(fmt.Sprintf(
+			"Build Time: %s",
+			bt.Format("Monday Janurary 2 at 15:04:05")))
 	}
 }

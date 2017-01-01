@@ -18,16 +18,3 @@ type = "foo" # Override logstash type
 address = "localhost:6379"  # Address of redis server in host:port format
 password = "foo" # Optional, remove or leave blank
 db = 0 # Optional DB number, remove or leave blank
-
-# Pub/Sub Events
-[pubsub]
-events = [
-    {
-        event = "play",
-        points = 1
-    },
-    {
-        event = "stop",
-        points = -1
-    },
-]
