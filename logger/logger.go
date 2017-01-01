@@ -25,7 +25,7 @@ var global = New()
 type F logrus.Fields
 
 // Logger configuration interface
-type Config interface {
+type Configurer interface {
 	Level() string
 	Format() string
 	LogFile() string
@@ -35,13 +35,13 @@ type Config interface {
 
 // Logger
 type logger struct {
-	config Config
+	config Configurer
 	entry  *logrus.Entry
 }
 
 // Sets up the logger according to configuration
-func Setup(config Config) { global.Setup(config) }
-func (l *logger) Setup(config Config) {
+func Setup(config Configurer) { global.Setup(config) }
+func (l *logger) Setup(config Configurer) {
 	l.config = config
 	l.SetLevel(config.Level())
 	l.ConsoleOutput(config.ConsoleOutput())

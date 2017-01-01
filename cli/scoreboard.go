@@ -38,7 +38,7 @@ func init() {
 // Scoreboard CLI pre run method, loads in configuration from file
 func scoreboardPreRunFn(cmd *cobra.Command, args []string) {
 	// Bind flags to viper values
-	config.BindLogLevelFlag(cmd.Flags().Lookup("log-level"))
+	logger.BindLogLevelFlag(cmd.Flags().Lookup("log-level"))
 	// Read in config from file
 	configPath, _ := cmd.Flags().GetString("config")
 	if err := config.Read(configPath); err != nil {
@@ -47,7 +47,7 @@ func scoreboardPreRunFn(cmd *cobra.Command, args []string) {
 		logger.WithError(err).Warn("unable to load config file")
 	}
 	// Setup Global Logger
-	logger.Setup(config.NewLogConifg())
+	logger.Setup(logger.NewConfig())
 }
 
 // Scoreboard CLI run method

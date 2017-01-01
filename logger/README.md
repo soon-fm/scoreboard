@@ -14,10 +14,39 @@ from:
 * Environment Variables
 * CLI Flags
 
-The `config` package has more information on how to configure the `logger` and
-other packages.
+### Config File
 
-## Global Usage
+``` toml
+[log]
+level = "info" # Logging verbosity (debug, info, warn, error)
+logfile = "/path/to/file.log" # Absolute path to log file
+format = "json" # Logging format (text, json, logstash)
+console_output = true # Enable or disable console log output
+
+# Logstash Configuration
+# Only used if log.format == "logstash"
+[logstash]
+type = "foo" # Override logstash type
+```
+
+###  Environment Variables
+
+The following environment variables can be used to override file configurations.
+
+* `SCOREBOARD_LOG_LEVEL`: Set the logging verbosity
+* `SCOREBOARD_LOG_LOGFILE`: Path to log file
+* `SCOREBOARD_LOG_FORMAT`: Set the logging format of each log entry
+
+### CLI Flags
+
+Some command line flags allow you to override file and environment variable
+configuration options:
+
+* `-l/--log-level`: Set the logging verbosity
+
+## Usage
+
+### Simple
 
 Simply call the `logger` with the designed log level method:
 
@@ -34,7 +63,7 @@ func main() {
 }
 ```
 
-### Logging Context
+### With Context
 
 Context can also be logged by using the `WithField`, `WithFields`, and `WithError`
 methods.

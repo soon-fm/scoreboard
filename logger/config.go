@@ -17,7 +17,7 @@
 // CLI Flags:
 // -l/--level info
 
-package config
+package logger
 
 import (
 	"github.com/spf13/pflag"
@@ -39,37 +39,37 @@ func BindLogLevelFlag(flag *pflag.Flag) {
 }
 
 // A simple type for accessing logging configuration
-type log struct{}
+type Config struct{}
 
 // Returns the logging verbosity level, binds to environment variable
-func (l log) Level() string {
+func (c Config) Level() string {
 	viper.BindEnv("LOG.LEVEL")
 	return viper.GetString("log.level")
 }
 
 // Returns absolute path to logfile
-func (l log) LogFile() string {
+func (c Config) LogFile() string {
 	viper.BindEnv("LOG.LOGFILE")
 	return viper.GetString("log.logfile")
 }
 
 // Returns logging format to use
-func (l log) Format() string {
+func (c Config) Format() string {
 	viper.BindEnv("LOG.FORMAT")
 	return viper.GetString("log.format")
 }
 
 // Returns console log output bool
-func (l log) ConsoleOutput() bool {
+func (c Config) ConsoleOutput() bool {
 	return viper.GetBool("log.console_output")
 }
 
 // Returns logstash format type
-func (l log) LogstashType() string {
+func (c Config) LogstashType() string {
 	return viper.GetString("logstash.type")
 }
 
-// Consturcts a new Log config
-func NewLogConifg() log {
-	return log{}
+// Constructs a Config
+func NewConfig() Config {
+	return Config{}
 }
