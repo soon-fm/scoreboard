@@ -5,7 +5,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"scoreboard/config"
 	"scoreboard/logger"
 	"scoreboard/pubsub/redis"
 )
@@ -22,7 +21,7 @@ var quitSignals = []os.Signal{
 
 // Central run function
 func Run() {
-	ps := redis.New(config.NewRedisConfig())
+	ps := redis.New(redis.NewConfig())
 	msgs, err := ps.Subscribe("foo")
 	if err != nil {
 		log.WithError(err).Fatal("failed to subscribe")

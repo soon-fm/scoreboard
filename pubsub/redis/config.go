@@ -1,4 +1,4 @@
-// Provides configuration types for Redis Pub/Sub
+// Provides configuration types foc Config Pub/Sub
 //
 // Example TOML:
 // [redis]
@@ -11,7 +11,7 @@
 // SCOREBOARD_REDIS_PASSWORD = "foo"
 // SCOREBOARD_REDIS_DB = "0"
 
-package config
+package redis
 
 import "github.com/spf13/viper"
 
@@ -23,27 +23,27 @@ func init() {
 }
 
 // A simple type for accessing redis configuration
-type redis struct{}
+type Config struct{}
 
 // Returns the reids connection address in host:ip format
-func (r redis) Address() string {
+func (c Config) Address() string {
 	viper.BindEnv("REDIS.ADDRESS")
 	return viper.GetString("redis.address")
 }
 
 // Returns redis server password
-func (r redis) Password() string {
+func (c Config) Password() string {
 	viper.BindEnv("REDIS.PASSWORD")
 	return viper.GetString("redis.password")
 }
 
 // Returns logging format to use
-func (r redis) DB() int {
+func (c Config) DB() int {
 	viper.BindEnv("REDIS.DB")
 	return viper.GetInt("redis.db")
 }
 
 // Returns a new redis config
-func NewRedisConfig() redis {
-	return redis{}
+func NewConfig() Config {
+	return Config{}
 }

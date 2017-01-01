@@ -14,7 +14,7 @@ import (
 var log = logger.WithField("pkg", "pubsub/redis")
 
 // Config interface, please see config package for more details
-type Config interface {
+type Configurer interface {
 	Address() string
 	Password() string
 	DB() int
@@ -33,7 +33,7 @@ func (m *Message) Payload() string {
 }
 
 type PubSub struct {
-	config Config
+	config Configurer
 	client *redis.Client
 	pubsub *redis.PubSub
 }
@@ -85,7 +85,7 @@ func (p *PubSub) Close() {
 	}
 }
 
-func New(config Config) *PubSub {
+func New(config Configurer) *PubSub {
 	return &PubSub{
 		config: config,
 		client: redis.NewClient(&redis.Options{
