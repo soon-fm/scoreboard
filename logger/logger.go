@@ -14,14 +14,12 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Global logrus logger
+var log = logrus.New()
+
 // Global logger any package can call without needing to construct
 // a new logger for simplicity
-var global *logger
-
-// Constructs our global logger
-func init() {
-	global = New()
-}
+var global = New()
 
 // A shortform wrapper around logrus.Fields
 type F logrus.Fields
@@ -49,7 +47,6 @@ func (l *logger) Setup(config Config) {
 	l.ConsoleOutput(config.ConsoleOutput())
 	l.LogToFile(config.LogFile())
 	l.SetFormat(config.Format())
-	l.WithBuild()
 }
 
 // Set the log level of the logger
@@ -58,13 +55,13 @@ func (l *logger) SetLevel(lvl string) {
 	lvl = strings.ToLower(lvl)
 	switch lvl {
 	case "debug":
-		l.entry.Logger.Level = logrus.DebugLevel
+		log.Level = logrus.DebugLevel
 	case "warn":
-		l.entry.Logger.Level = logrus.WarnLevel
+		log.Level = logrus.WarnLevel
 	case "error":
-		l.entry.Logger.Level = logrus.ErrorLevel
+		log.Level = logrus.ErrorLevel
 	default:
-		l.entry.Logger.Level = logrus.InfoLevel
+		log.Level = logrus.InfoLevel
 	}
 }
 
@@ -73,7 +70,7 @@ func ConsoleOutput(enable bool) {}
 func (l *logger) ConsoleOutput(enable bool) {
 	l.entry.Logger.Out = ioutil.Discard
 	if enable {
-		l.entry.Logger.Hooks.Add(hooks.NewConsoleHook())
+		log.Hooks.Add(hooks.NewConsoleHook())
 	}
 }
 
@@ -81,7 +78,7 @@ func (l *logger) ConsoleOutput(enable bool) {
 func LogToFile(path string) { global.LogToFile(path) }
 func (l *logger) LogToFile(path string) {
 	if path != "" {
-		l.entry.Logger.Hooks.Add(hooks.NewFileHook(path))
+		log.Hooks.Add(hooks.NewFileHook(path))
 	}
 }
 
@@ -103,19 +100,19 @@ func (l *logger) setLogstashFormat(typ string) {
 	if typ == "" {
 		typ = "scoreboard"
 	}
-	l.entry.Logger.Formatter = &formatters.LogstashFormatter{
+	log.Formatter = &formatters.LogstashFormatter{
 		Type: typ,
 	}
 }
 
 // Set log format to use json
 func (l *logger) setJSONFormat() {
-	l.entry.Logger.Formatter = &logrus.JSONFormatter{}
+	log.Formatter = &logrus.JSONFormatter{}
 }
 
 // Set text logger
 func (l *logger) setTextFormat() {
-	l.entry.Logger.Formatter = &logrus.TextFormatter{
+	log.Formatter = &logrus.TextFormatter{
 		FullTimestamp: true,
 	}
 }
@@ -184,8 +181,7 @@ func (l *logger) Panic(msg string, v ...interface{}) {
 }
 
 // Log build details
-func WithBuild() { global.WithBuild() }
-func (l *logger) WithBuild() {
+func buildFields() logrus.Fields {
 	v, err := version.Version()
 	if err != nil {
 		v = "unknown"
@@ -197,16 +193,16 @@ func (l *logger) WithBuild() {
 	} else {
 		tStr = "unknown"
 	}
-	l.entry = l.entry.Logger.WithFields(logrus.Fields{
+	return logrus.Fields{
 		"version":   v,
 		"buildTime": tStr,
-	})
+	}
 }
 
 // Exported logger constructor, requiring a config type that
 // implments the config interface
 func New() *logger {
 	return &logger{
-		entry: logrus.NewEntry(logrus.New()),
+		entry: logrus.NewEntry(log).WithFields(buildFields()),
 	}
 }
