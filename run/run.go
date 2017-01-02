@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
+	"scoreboard/db"
 	"scoreboard/logger"
 	"scoreboard/pubsub/redis"
 )
@@ -43,9 +44,10 @@ func Run() error {
 	logger.Setup(logger.NewConfig())
 	// Redis Pub/Sub
 	ps := redis.New(redis.NewConfig())
+	defer ps.Close()
 	msgs, err := ps.Subscribe("foo")
 	if err != nil {
-		log.WithError(err).Fatal("failed to subscribe")
+		return err
 	}
 	go func() {
 		for msg := range msgs {
@@ -55,7 +57,14 @@ func Run() error {
 			}).Debug("received message")
 		}
 	}()
-	defer ps.Close()
+	// DB Client
+	client, err := db.New(db.NewConfig())
+	if err != nil {
+		return err
+	}
+	if err := client.Create(); err != nil {
+		return err
+	}
 	UntilQuit()
 	return nil
 }
