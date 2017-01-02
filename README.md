@@ -2,10 +2,12 @@
 
 Stores scores for each user based on system events into InfluxDB.
 
+## Scoring
+
 The following events reward the following score values:
 
-* Playing a Track: +1
-* Track Skip: -1
+* Playing a Track: +1 Point
+* Track Skip: -1 Point
 
 ## Configuration
 
@@ -26,8 +28,6 @@ by default the following directories will be searched for a `config.toml` file:
 Please see the example configuration file in this directory.
 
 ``` toml
-# Example Configuration File
-
 # Logging Configuration
 [log]
 level = "info" # Logging verbosity (debug, info, warn, error)
@@ -36,16 +36,22 @@ format = "json" # Logging format (text, json, logstash)
 console_output = true # Enable or disable console log output
 
 # Logstash Configuration
-# Only used if log.format == "logstash"
+# Only used if log.format is set to "logstash"
 [logstash]
 type = "foo" # Override logstash type
 
-# Redis
-# Used for connecting to Redis services
+# Redis Connection Configuration
 [redis]
 address = "localhost:6379"  # Address of redis server in host:port format
 password = "foo" # Optional, remove or leave blank
 db = 0 # Optional DB number, remove or leave blank
+
+# Influx DB Connection Configuration
+[influxdb]
+address = "http://localhost:8086" # Required Influx DB HTTP API address
+db = "myDb" # Required DB Name
+username = "username" # Optional Username - omit of not required
+password = "password" # Optional Password - omit of not required
 ```
 
 ### 2. Environment Variables
@@ -63,6 +69,13 @@ The following environment variables can be used to override file configurations.
 * `SCOREBOARD_REDIS_ADDRESS`: Redis server address in `host:port` format
 * `SCOREBOARD_REDIS_PASSWORD`: Password for Redis server
 * `SCOREBOARD_REDIS_DB`: Redis DB Number
+
+#### InfluxDB
+
+* `SCOREBOARD_INFLUXDB_ADDRESS`: Influx DB HTTP Address
+* `SCOREBOARD_INFLUXDB_DB`: DB Name
+* `SCOREBOARD_INFLUXDB_USERNAME`: Username for InfluxDB
+* `SCOREBOARD_INFLUXDB_PASSWORD`: Password for InfluxDB
 
 ### 3. CLI Flags
 

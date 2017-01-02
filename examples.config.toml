@@ -1,4 +1,6 @@
+#
 # Example Configuration File
+#
 
 # Logging Configuration
 [log]
@@ -8,13 +10,19 @@ format = "json" # Logging format (text, json, logstash)
 console_output = true # Enable or disable console log output
 
 # Logstash Configuration
-# Only used if log.format == "logstash"
+# Only used if log.format is set to "logstash"
 [logstash]
 type = "foo" # Override logstash type
 
-# Redis
-# Used for connecting to Redis services
+# Redis Connection Configuration
 [redis]
 address = "localhost:6379"  # Address of redis server in host:port format
 password = "foo" # Optional, remove or leave blank
 db = 0 # Optional DB number, remove or leave blank
+
+# Influx DB Connection Configuration
+[influxdb]
+address = "http://localhost:8086" # Required Influx DB HTTP API address
+db = "myDb" # Required DB Name
+username = "username" # Optional Username - omit of not required
+password = "password" # Optional Password - omit of not required
