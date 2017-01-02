@@ -3,6 +3,12 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "ixDTL1EaaHh9wVq5+CKNj3J985o=",
+			"path": "github.com/DavidHuie/gomigrate",
+			"revision": "4004e6142040f5d622e9d2be6e833a4652741571",
+			"revisionTime": "2016-08-09T00:10:28Z"
+		},
+		{
 			"checksumSHA1": "hveFTNQ9YEyYRs6SWuXM+XU9qRI=",
 			"path": "github.com/fsnotify/fsnotify",
 			"revision": "fd9ec7deca8bf46ecd2a795baaacf2b3a9be1197",
@@ -85,6 +91,12 @@
 			"path": "github.com/influxdata/influxdb/pkg/escape",
 			"revision": "c783c3d05fee10575aa612a3ff87d71b4cba02f4",
 			"revisionTime": "2016-12-30T18:00:52Z"
+		},
+		{
+			"checksumSHA1": "rjOPPye7xtwKTe67HeEtLP5Gl8A=",
+			"path": "github.com/lib/pq",
+			"revision": "22cb3e4c487ce6242e2b03369219e5631eed1221",
+			"revisionTime": "2016-12-31T17:40:29Z"
 		},
 		{
 			"checksumSHA1": "506eXGmFfB7mgzbMcsdT/UAXJgI=",
