@@ -59,3 +59,8 @@ func (c Config) DB() string {
 	viper.BindEnv("INFLUXDB.DB")
 	return viper.GetString("influxdb.db")
 }
+
+// Config constructor
+func NewConfig() Config {
+	return Config{}
+}
