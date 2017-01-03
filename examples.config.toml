@@ -20,9 +20,11 @@ address = "localhost:6379"  # Address of redis server in host:port format
 password = "foo" # Optional, remove or leave blank
 db = 0 # Optional DB number, remove or leave blank
 
-# Influx DB Connection Configuration
-[influxdb]
-address = "http://localhost:8086" # Required Influx DB HTTP API address
+# Postgres DB Configuration
+[db]
+host = "localhost" # Datbabase host
+port = 5432 # Optional Datbabase port
 db = "myDb" # Required DB Name
 username = "username" # Optional Username - omit of not required
 password = "password" # Optional Password - omit of not required
+migration_path = "/path/to/migrations" # Optional Datbase migration path

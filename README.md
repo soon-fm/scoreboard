@@ -46,12 +46,14 @@ address = "localhost:6379"  # Address of redis server in host:port format
 password = "foo" # Optional, remove or leave blank
 db = 0 # Optional DB number, remove or leave blank
 
-# Influx DB Connection Configuration
-[influxdb]
-address = "http://localhost:8086" # Required Influx DB HTTP API address
+# Postgres DB Configuration
+[db]
+host = "localhost" # Datbabase host
+port = 5432 # Optional Datbabase port
 db = "myDb" # Required DB Name
 username = "username" # Optional Username - omit of not required
 password = "password" # Optional Password - omit of not required
+migration_path = "/path/to/migrations" # Optional Datbase migration path
 ```
 
 ### 2. Environment Variables
@@ -70,12 +72,14 @@ The following environment variables can be used to override file configurations.
 * `SCOREBOARD_REDIS_PASSWORD`: Password for Redis server
 * `SCOREBOARD_REDIS_DB`: Redis DB Number
 
-#### InfluxDB
+#### PostgreSQL DB
 
-* `SCOREBOARD_INFLUXDB_ADDRESS`: Influx DB HTTP Address
-* `SCOREBOARD_INFLUXDB_DB`: DB Name
-* `SCOREBOARD_INFLUXDB_USERNAME`: Username for InfluxDB
-* `SCOREBOARD_INFLUXDB_PASSWORD`: Password for InfluxDB
+* `SCOREBOARD_DB_HOST`: DB Host
+* `SCOREBOARD_DB_PORT`: DB Port
+* `SCOREBOARD_DB_DB`: DB Name
+* `SCOREBOARD_DB_USERNAME`: Username for DB
+* `SCOREBOARD_DB_PASSWORD`: Password for DB
+* `SCOREBOARD_DB_MIGRATION_PATH`: Database migration path
 
 ### 3. CLI Flags
 

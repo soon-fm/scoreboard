@@ -2,7 +2,8 @@
 //
 // Example TOML Configuration:
 // [db]
-// address = "localhost:8086" # Datbabase address in host:ip format
+// host = "localhost" # Datbabase host
+// port = 5432 # Datbabase port
 // db = "myDb" # Required DB Name
 // username = "username" # Optional Username - omit of not required
 // password = "password" # Optional Password - omit of not required
@@ -10,7 +11,8 @@
 //
 // Environment Variables
 //
-// SCOREBOARD_DB_ADDRESS
+// SCOREBOARD_DB_HOST
+// SCOREBOARD_DB_PORT
 // SCOREBOARD_DB_DB
 // SCOREBOARD_DB_USERNAME
 // SCOREBOARD_DB_PASSWORD
