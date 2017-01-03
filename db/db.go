@@ -44,7 +44,7 @@ func (db *DB) Query(cmd string) (res []influxdb.Result, err error) {
 // Constructs a new DB
 func New(c Configurer) (*DB, error) {
 	client, err := influxdb.NewHTTPClient(influxdb.HTTPConfig{
-		Addr:     c.Address(),
+		Addr:     c.Host(),
 		Username: c.Username(),
 		Password: c.Password(),
 	})

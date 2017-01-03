@@ -1,63 +1,97 @@
 // db package configuration
 //
 // Example TOML Configuration:
-// [influxdb]
-// address = "http://localhost:8086" # Required Influx DB HTTP API address
+// [db]
+// address = "localhost:8086" # Datbabase address in host:ip format
 // db = "myDb" # Required DB Name
 // username = "username" # Optional Username - omit of not required
 // password = "password" # Optional Password - omit of not required
+// migration_path = "/path/to/migrations" # Optional Datbase migration path
 //
 // Environment Variables
 //
-// SCOREBOARD_INFLUXDB_ADDRESS
-// SCOREBOARD_INFLUXDB_DB
-// SCOREBOARD_INFLUXDB_USERNAME
-// SCOREBOARD_INFLUXDB_PASSWORD
+// SCOREBOARD_DB_ADDRESS
+// SCOREBOARD_DB_DB
+// SCOREBOARD_DB_USERNAME
+// SCOREBOARD_DB_PASSWORD
+// SCOREBOARD_DB_MIGRATION_PATH
 
 package db
 
-import "github.com/spf13/viper"
+import (
+	"fmt"
+
+	"github.com/spf13/viper"
+)
 
 func init() {
-	viper.SetDefault("influxdb.address", "http://localhost:8086")
-	viper.SetDefault("influxdb.username", "")
-	viper.SetDefault("influxdb.password", "")
-	viper.SetDefault("influxdb.db", "")
+	viper.SetDefault("db.host", "localhost")
+	viper.SetDefault("db.port", 5432)
+	viper.SetDefault("db.username", "postgres")
+	viper.SetDefault("db.password", "postgres")
+	viper.SetDefault("db.db", "scoreboard")
+	viper.SetDefault("db.migration_path", "./migrations")
 }
 
 // Accepted by the DB constructor, implemented by Config type below
 type Configurer interface {
-	Address() string
+	Host() string
+	Port() int
 	Username() string
 	Password() string
 	DB() string
+	ConnectionURL() string
+	MigrationPath() string
 }
 
 // Empty struct to implement Configurer interface
 type Config struct{}
 
-// Returns the influx db http api address
-func (c Config) Address() string {
-	viper.BindEnv("INFLUXDB.ADDRESS")
-	return viper.GetString("influxdb.address")
+// Returns the db host
+func (c Config) Host() string {
+	viper.BindEnv("DB.HOST")
+	return viper.GetString("db.host")
 }
 
-// Returns the influx db user name
+// Returns the db port
+func (c Config) Port() int {
+	viper.BindEnv("DB.PORT")
+	return viper.GetInt("db.port")
+}
+
+// Returns the db user name
 func (c Config) Username() string {
-	viper.BindEnv("INFLUXDB.USERNAME")
-	return viper.GetString("influxdb.username")
+	viper.BindEnv("DB.USERNAME")
+	return viper.GetString("db.username")
 }
 
-// Returns the influx db password
+// Returns the db password
 func (c Config) Password() string {
-	viper.BindEnv("INFLUXDB.PASSWORD")
-	return viper.GetString("influxdb.password")
+	viper.BindEnv("DB.PASSWORD")
+	return viper.GetString("db.password")
 }
 
-// Returns the influx db to use
+// Returns the db to use
 func (c Config) DB() string {
-	viper.BindEnv("INFLUXDB.DB")
-	return viper.GetString("influxdb.db")
+	viper.BindEnv("DB.DB")
+	return viper.GetString("db.db")
+}
+
+// Returns the db migration path
+func (c Config) MigrationPath() string {
+	viper.BindEnv("DB.MIGRATION_PATH")
+	return viper.GetString("db.migration_path")
+}
+
+// Returns a connection url
+func (c Config) ConnectionURL() string {
+	return fmt.Sprintf(
+		"host=%s port=%d dbname=%s user=%s password=%s sslmode=disable",
+		c.Host(),
+		c.Port(),
+		c.DB(),
+		c.Username(),
+		c.Password())
 }
 
 // Config constructor
