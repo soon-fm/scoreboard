@@ -22,7 +22,7 @@ func init() {
 	viper.SetDefault("influxdb.address", "http://localhost:8086")
 	viper.SetDefault("influxdb.username", "")
 	viper.SetDefault("influxdb.password", "")
-	viper.SetDefault("influxdb.db", "")
+	viper.SetDefault("influxdb.db", "soon_fm_scoreboard")
 }
 
 // Accepted by the DB constructor, implemented by Config type below

@@ -16,7 +16,7 @@ type DB struct {
 // Create Database
 // By default CREATE DATABASE uses IF NOT EXISTS
 func (db *DB) Create() error {
-	_, err := db.Query(fmt.Sprintf("CREATE DATABASE %s", db.config.DB()))
+	_, err := db.Query(fmt.Sprintf("CREATE DATABASE \"%s\"", db.config.DB()))
 	return err
 }
 
