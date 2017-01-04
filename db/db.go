@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"time"
 
 	influxdb "github.com/influxdata/influxdb/client/v2"
 )
@@ -39,6 +40,26 @@ func (db *DB) Query(cmd string) (res []influxdb.Result, err error) {
 		return nil, rsp.Error()
 	}
 	return rsp.Results, nil
+}
+
+// Write a new score point
+func (d *DB) InsertScore(user string, score int) error {
+	bp, err := influxdb.NewBatchPoints(influxdb.BatchPointsConfig{
+		Database: d.config.DB(),
+	})
+	if err != nil {
+		return err
+	}
+	tags := map[string]string{"user": user}
+	fields := map[string]interface{}{
+		"score": score,
+	}
+	pt, err := influxdb.NewPoint("score", tags, fields, time.Now().UTC())
+	if err != nil {
+		return err
+	}
+	bp.AddPoint(pt)
+	return d.client.Write(bp)
 }
 
 // Constructs a new DB
