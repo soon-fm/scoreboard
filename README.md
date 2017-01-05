@@ -52,6 +52,10 @@ address = "http://localhost:8086" # Required Influx DB HTTP API address
 db = "myDb" # Required DB Name
 username = "username" # Optional Username - omit of not required
 password = "password" # Optional Password - omit of not required
+
+# HTTP API Configuration
+[http]
+listen = "0.0.0.0:5000" # Optional listen address, defaults to :5000
 ```
 
 ### 2. Environment Variables
@@ -76,6 +80,10 @@ The following environment variables can be used to override file configurations.
 * `SCOREBOARD_INFLUXDB_DB`: DB Name
 * `SCOREBOARD_INFLUXDB_USERNAME`: Username for InfluxDB
 * `SCOREBOARD_INFLUXDB_PASSWORD`: Password for InfluxDB
+
+#### HTTP
+
+* `SCOREBOARD_HTTP_LISTEN`: HTTP Listen Address
 
 ### 3. CLI Flags
 
