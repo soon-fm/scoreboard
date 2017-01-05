@@ -99,6 +99,12 @@
 			"revisionTime": "2016-12-11T22:23:15Z"
 		},
 		{
+			"checksumSHA1": "6dhQbROBVeG0wMiDonAVvQ3plZQ=",
+			"path": "github.com/nvellon/hal",
+			"revision": "08af269b06ba828cf9b3177a3667b8c868269f3d",
+			"revisionTime": "2016-05-03T04:38:58Z"
+		},
+		{
 			"checksumSHA1": "8Y05Pz7onrQPcVWW6JStSsYRh6E=",
 			"path": "github.com/pelletier/go-buffruneio",
 			"revision": "df1e16fde7fc330a0ca68167c23bf7ed6ac31d6d",
