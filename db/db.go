@@ -7,6 +7,20 @@ import (
 	influxdb "github.com/influxdata/influxdb/client/v2"
 )
 
+type Writer interface {
+	Write(Point) error
+}
+
+type Queryer interface {
+	Query(string) ([]influxdb.Result, error)
+}
+
+type Point interface {
+	Name() string
+	Tags() map[string]string
+	Fields() map[string]interface{}
+}
+
 type DB struct {
 	// Exported
 	// Unexported
@@ -42,24 +56,25 @@ func (db *DB) Query(cmd string) (res []influxdb.Result, err error) {
 	return rsp.Results, nil
 }
 
-// Write a new score point
-func (d *DB) InsertScore(user string, score int) error {
+// Writes a new point to the DB
+func (d *DB) Write(p Point) error {
 	bp, err := influxdb.NewBatchPoints(influxdb.BatchPointsConfig{
 		Database: d.config.DB(),
 	})
 	if err != nil {
 		return err
 	}
-	tags := map[string]string{"user": user}
-	fields := map[string]interface{}{
-		"score": score,
-	}
-	pt, err := influxdb.NewPoint("score", tags, fields, time.Now().UTC())
+	pt, err := influxdb.NewPoint(p.Name(), p.Tags(), p.Fields(), time.Now().UTC())
 	if err != nil {
 		return err
 	}
 	bp.AddPoint(pt)
 	return d.client.Write(bp)
+}
+
+// Close client
+func (d *DB) Close() error {
+	return d.client.Close()
 }
 
 // Constructs a new DB
