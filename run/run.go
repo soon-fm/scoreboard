@@ -43,30 +43,16 @@ func Run() error {
 	}
 	// Setup Logger
 	logger.Setup(logger.NewConfig())
+	// Ensure our InfluxDB Exists
+	if err := db.Create(db.NewConfig()); err != nil {
+		return err
+	}
 	// Redis Pub/Sub
 	ps := redis.New(redis.NewConfig())
 	defer ps.Close()
-	msgs, err := ps.Subscribe("foo")
-	if err != nil {
-		return err
-	}
-	go func() {
-		for msg := range msgs {
-			log.WithFields(logger.F{
-				"topic":   msg.Topic(),
-				"payload": msg.Payload(),
-			}).Debug("received message")
-		}
-	}()
-	// DB Client
-	client, err := db.New(db.NewConfig())
-	if err != nil {
-		return err
-	}
-	if err := client.Create(); err != nil {
-		return err
-	}
+	// HTTP API Server
 	go http.ListenAndServe(http.NewConfig())
+	// Run until a quit os signal is received
 	UntilQuit()
 	return nil
 }

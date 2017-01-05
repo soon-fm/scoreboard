@@ -2,7 +2,6 @@ package db
 
 import (
 	"fmt"
-	"scoreboard/logger"
 	"time"
 
 	influxdb "github.com/influxdata/influxdb/client/v2"
@@ -44,6 +43,5 @@ func ScoresByWeek(q Queryer) ([]influxdb.Result, error) {
 	date := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
 	mon, fri := weekdayTimeRange(date)
 	qry := fmt.Sprintf(scoresByWeekQry, mon.Format(time.RFC3339), fri.Format(time.RFC3339))
-	logger.WithField("query", qry).Debug("scores by week query")
 	return q.Query(qry)
 }

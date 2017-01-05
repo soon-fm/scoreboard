@@ -21,6 +21,18 @@ type Point interface {
 	Fields() map[string]interface{}
 }
 
+// Create Database
+// By default CREATE DATABASE uses IF NOT EXISTS
+func Create(config Configurer) error {
+	client, err := New(config)
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+	_, err = client.Query(fmt.Sprintf("CREATE DATABASE \"%s\"", config.DB()))
+	return err
+}
+
 type DB struct {
 	// Exported
 	// Unexported
@@ -28,17 +40,11 @@ type DB struct {
 	client influxdb.Client
 }
 
-// Create Database
-// By default CREATE DATABASE uses IF NOT EXISTS
-func (db *DB) Create() error {
-	_, err := db.Query(fmt.Sprintf("CREATE DATABASE \"%s\"", db.config.DB()))
-	return err
-}
-
 // Taken from https://github.com/influxdata/influxdb/tree/v0.13.0/client#querying-data
 // with minor modifications
 // Allows raw queries to database
 func (db *DB) Query(cmd string) (res []influxdb.Result, err error) {
+	log.WithField("query", cmd).Debug("query db")
 	// Construct an InfluxDB Query
 	qry := influxdb.Query{
 		Command:  cmd,
