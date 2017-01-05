@@ -29,3 +29,8 @@ type Config struct{}
 func (c Config) Listen() string {
 	return viper.GetString("http.listen")
 }
+
+// Config Constructor
+func NewConfig() Config {
+	return Config{}
+}
