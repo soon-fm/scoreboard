@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/viper"
 
 	"scoreboard/db"
+	"scoreboard/http"
 	"scoreboard/logger"
 	"scoreboard/pubsub/redis"
 )
@@ -65,6 +66,7 @@ func Run() error {
 	if err := client.Create(); err != nil {
 		return err
 	}
+	go http.ListenAndServe(http.NewConfig())
 	UntilQuit()
 	return nil
 }

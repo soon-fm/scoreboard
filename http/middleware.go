@@ -21,6 +21,7 @@ func InfluxDBMiddleware(next http.Handler) http.Handler {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
+		defer client.Close()
 		ctx := context.WithValue(r.Context(), "influxdb", client)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
