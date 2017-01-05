@@ -111,6 +111,12 @@
 			"revisionTime": "2016-12-13T14:20:06Z"
 		},
 		{
+			"checksumSHA1": "ZfO0bvDS6WOAG+mKN90UAS+tuMA=",
+			"path": "github.com/pressly/chi",
+			"revision": "bda7fc49d11ad4024c761b858e295360ecb7fbaf",
+			"revisionTime": "2016-12-31T17:22:31Z"
+		},
+		{
 			"checksumSHA1": "rz4mV1jhdZdf7P2B0MMNIjOe7xs=",
 			"path": "github.com/sirupsen/logrus",
 			"revision": "d26492970760ca5d33129d2d799e34be5c4782eb",
