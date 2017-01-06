@@ -1,5 +1,10 @@
 package pubsub
 
+type Topic interface {
+	Name() string
+	Handler() HandlerFunc
+}
+
 type Message interface {
 	Name() string
 	Payload() string
@@ -10,7 +15,7 @@ type Closer interface {
 }
 
 type Subscriber interface {
-	Subscribe(string) (Reader, error)
+	Subscribe(Topic) (Reader, error)
 }
 
 type SubscribeCloser interface {
@@ -28,10 +33,12 @@ type PublishCloser interface {
 }
 
 type Reader interface {
-	Read() <-chan Message
+	Read()
 }
 
 type ReadCloser interface {
 	Reader
 	Closer
 }
+
+type HandlerFunc func(Message) error

@@ -37,9 +37,9 @@ func (m *Message) Payload() string {
 
 // Pubsub subscription implementing the pubsub.ReadCloser interface
 type Subscription struct {
-	pubsub *redis.PubSub
-	wg     *sync.WaitGroup
-	ch     chan pubsub.Message
+	pubsub  *redis.PubSub
+	wg      *sync.WaitGroup
+	handler pubsub.HandlerFunc
 }
 
 // Returns a sync.Waitgroup pointer
@@ -50,14 +50,6 @@ func (s *Subscription) waitGroup() *sync.WaitGroup {
 	return s.wg
 }
 
-// Returns Message channel
-func (s *Subscription) channel() chan pubsub.Message {
-	if s.ch == nil {
-		s.ch = make(chan pubsub.Message)
-	}
-	return s.ch
-}
-
 // Consumes messages from pubsub placing them on a message channel
 func (s *Subscription) receive() {
 	log.Debug("start subscription receive")
@@ -65,22 +57,26 @@ func (s *Subscription) receive() {
 	wg := s.waitGroup()
 	wg.Add(1)
 	defer wg.Done()
-	ch := s.channel()
 	for {
 		msg, err := s.pubsub.ReceiveMessage()
 		if err != nil {
 			log.WithError(err).Warn("recieve message error")
 			return // Exit routine on error
 		}
-		ch <- &Message{msg}
+		// Call message handler, incrementing the wait group
+		// this means on close we wait for all messages currently
+		// being handled to compelete before exit
+		go func() {
+			wg.Add(1)
+			defer wg.Done()
+			s.handler(&Message{msg})
+		}()
 	}
 }
 
 // Read messages from the pubsub connection
-func (s *Subscription) Read() <-chan pubsub.Message {
-	ch := s.channel()
+func (s *Subscription) Read() {
 	go s.receive()
-	return (<-chan pubsub.Message)(ch)
 }
 
 // Close pubsub connection
@@ -92,11 +88,6 @@ func (s *Subscription) Close() error {
 	// Wait for pubsub routines to exit
 	wg := s.waitGroup()
 	wg.Wait()
-	// Close the message channel
-	if s.ch != nil {
-		close(s.ch)
-		s.ch = nil
-	}
 	return nil
 }
 
@@ -109,14 +100,14 @@ type Client struct {
 
 // Subscribes to a topic, opening a pubsub connection, returning a pubsub.Reader
 // for consuming messages on the topic
-func (c *Client) Subscribe(topic string) (pubsub.Reader, error) {
-	log.WithField("topic", topic).Info("subscribe to topic")
-	pubsub, err := c.client.Subscribe(topic)
+func (c *Client) Subscribe(topic pubsub.Topic) (pubsub.Reader, error) {
+	log.WithField("topic", topic.Name()).Info("subscribe to topic")
+	pubsub, err := c.client.Subscribe(topic.Name())
 	if err != nil {
 		return nil, err
 	}
-	subscription := &Subscription{pubsub: pubsub}
-	c.subscriptions[topic] = subscription
+	subscription := &Subscription{pubsub: pubsub, handler: topic.Handler()}
+	c.subscriptions[topic.Name()] = subscription
 	return subscription, nil
 }
 

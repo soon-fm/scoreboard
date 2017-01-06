@@ -12,6 +12,7 @@ import (
 	"scoreboard/db"
 	"scoreboard/http"
 	"scoreboard/logger"
+	"scoreboard/pubsub"
 	"scoreboard/pubsub/redis"
 )
 
@@ -47,17 +48,13 @@ func Run() error {
 	if err := db.Create(db.NewConfig()); err != nil {
 		return err
 	}
-	// Redis Pub/Sub
+	// Redis Pub/Sub Events
 	ps := redis.New(redis.NewConfig())
-	events, err := ps.Subscribe("fm:events")
+	fmevents, err := ps.Subscribe(pubsub.PlayerEvents{})
 	if err != nil {
 		return err
 	}
-	go func() {
-		for msg := range events.Read() {
-			log.WithField("payload", msg.Payload()).Debug("received message")
-		}
-	}()
+	fmevents.Read()
 	defer ps.Close()
 	// HTTP API Server
 	go http.ListenAndServe(http.NewConfig())
