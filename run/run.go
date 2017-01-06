@@ -49,6 +49,15 @@ func Run() error {
 	}
 	// Redis Pub/Sub
 	ps := redis.New(redis.NewConfig())
+	events, err := ps.Subscribe("fm:events")
+	if err != nil {
+		return err
+	}
+	go func() {
+		for msg := range events.Read() {
+			log.WithField("payload", msg.Payload()).Debug("received message")
+		}
+	}()
 	defer ps.Close()
 	// HTTP API Server
 	go http.ListenAndServe(http.NewConfig())

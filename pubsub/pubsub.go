@@ -1,16 +1,16 @@
 package pubsub
 
 type Message interface {
-	Topic() string
+	Name() string
 	Payload() string
 }
 
 type Closer interface {
-	Close()
+	Close() error
 }
 
 type Subscriber interface {
-	Subscribe(...string) (<-chan Message, error)
+	Subscribe(string) (Reader, error)
 }
 
 type SubscribeCloser interface {
@@ -24,5 +24,14 @@ type Publisher interface {
 
 type PublishCloser interface {
 	Publisher
+	Closer
+}
+
+type Reader interface {
+	Read() <-chan Message
+}
+
+type ReadCloser interface {
+	Reader
 	Closer
 }
