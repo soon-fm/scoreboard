@@ -98,3 +98,13 @@ func New(c Configurer) (*DB, error) {
 		client: client,
 	}, nil
 }
+
+// Simple with db decorator style, run any function with a fresh db connection
+func With(fn func(db *DB) error) error {
+	db, err := New(NewConfig())
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	return fn(db)
+}
