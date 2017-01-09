@@ -2,7 +2,7 @@
 .DS_Store
 
 # Build
-.build
+.bin
 
 # Binary
 /scoreboard
