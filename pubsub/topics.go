@@ -62,7 +62,7 @@ func (p PlayerEvents) play(payload map[string]interface{}) error {
 		log.WithFields(logger.F{
 			"user":  score.User(),
 			"value": score.Value(),
-		}).Debug("add score for user")
+		}).Info("add score for user")
 		return db.Write(score)
 	})
 }
@@ -79,7 +79,7 @@ func (p PlayerEvents) stop(payload map[string]interface{}) error {
 		log.WithFields(logger.F{
 			"user":  score.User(),
 			"value": score.Value(),
-		}).Debug("add score for user")
+		}).Info("add score for user")
 		return db.Write(score)
 	})
 }
