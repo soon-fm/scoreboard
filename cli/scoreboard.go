@@ -33,7 +33,7 @@ func init() {
 		"Logging log level. One of 'debug', 'info', 'warn', 'error'")
 	logger.BindLogLevelFlag(scoreboardCmd.PersistentFlags().Lookup("log-level"))
 	// Add Sub Commands
-	scoreboardCmd.AddCommand(versionCmd)
+	scoreboardCmd.AddCommand(versionCmd, importCmd)
 }
 
 // Scoreboard CLI run method

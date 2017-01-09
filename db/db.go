@@ -19,6 +19,7 @@ type Point interface {
 	Name() string
 	Tags() map[string]string
 	Fields() map[string]interface{}
+	Time() time.Time
 }
 
 // Create Database
@@ -70,7 +71,7 @@ func (d *DB) Write(p Point) error {
 	if err != nil {
 		return err
 	}
-	pt, err := influxdb.NewPoint(p.Name(), p.Tags(), p.Fields(), time.Now().UTC())
+	pt, err := influxdb.NewPoint(p.Name(), p.Tags(), p.Fields(), p.Time())
 	if err != nil {
 		return err
 	}

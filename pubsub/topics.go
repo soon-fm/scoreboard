@@ -5,6 +5,7 @@ import (
 	"errors"
 	"scoreboard/db"
 	"scoreboard/logger"
+	"time"
 )
 
 type PlayerEvents struct{}
@@ -57,7 +58,7 @@ func (p PlayerEvents) play(payload map[string]interface{}) error {
 	if err != nil {
 		return err
 	}
-	score := db.NewScore(user, 1)
+	score := db.NewScore(user, 1, time.Now().UTC())
 	return db.With(func(db *db.DB) error {
 		log.WithFields(logger.F{
 			"user":  score.User(),
@@ -74,7 +75,7 @@ func (p PlayerEvents) stop(payload map[string]interface{}) error {
 	if err != nil {
 		return err
 	}
-	score := db.NewScore(user, -1)
+	score := db.NewScore(user, -1, time.Now().UTC())
 	return db.With(func(db *db.DB) error {
 		log.WithFields(logger.F{
 			"user":  score.User(),

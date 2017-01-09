@@ -1,9 +1,12 @@
 package db
 
+import "time"
+
 // Implements the Point interface to store scores consistently
 type Score struct {
 	value int
 	user  string
+	time  time.Time
 }
 
 // Returns the measurement name
@@ -25,6 +28,11 @@ func (s Score) Fields() map[string]interface{} {
 	}
 }
 
+// Returns score timestamp
+func (s Score) Time() time.Time {
+	return s.time
+}
+
 // Returns the value
 func (s Score) Value() int {
 	return s.value
@@ -36,6 +44,6 @@ func (s Score) User() string {
 }
 
 // Constructs a new score
-func NewScore(user string, val int) Score {
-	return Score{user: user, value: val}
+func NewScore(user string, val int, t time.Time) Score {
+	return Score{user: user, value: val, time: t}
 }
