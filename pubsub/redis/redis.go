@@ -63,14 +63,19 @@ func (s *Subscription) receive() {
 			log.WithError(err).Warn("recieve message error")
 			return // Exit routine on error
 		}
-		// Call message handler, incrementing the wait group
-		// this means on close we wait for all messages currently
-		// being handled to compelete before exit
-		go func() {
-			wg.Add(1)
-			defer wg.Done()
-			s.handler(&Message{msg})
-		}()
+		go s.handle(&Message{msg})
+	}
+}
+
+// Call message handler, incrementing the wait group
+// this means on close we wait for all messages currently
+// being handled to compelete before exit
+func (s *Subscription) handle(msg *Message) {
+	wg := s.waitGroup()
+	wg.Add(1)
+	defer wg.Done()
+	if err := s.handler(msg); err != nil {
+		log.WithError(err).Error("error handling payload")
 	}
 }
 
@@ -102,7 +107,7 @@ type Client struct {
 // for consuming messages on the topic
 func (c *Client) Subscribe(topic pubsub.Topic) (pubsub.Reader, error) {
 	log.WithField("topic", topic.Name()).Info("subscribe to topic")
-	pubsub, err := c.client.Subscribe(topic.Name())
+	pubsub, err := c.client.PSubscribe(topic.Name())
 	if err != nil {
 		return nil, err
 	}
