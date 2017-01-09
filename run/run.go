@@ -40,7 +40,7 @@ func init() {
 func Run() error {
 	// Read configuration
 	if err := ReadConfig(); err != nil {
-		return err
+		log.WithError(err).Warn("error loading configuration")
 	}
 	// Setup Logger
 	logger.Setup(logger.NewConfig())

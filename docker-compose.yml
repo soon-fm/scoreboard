@@ -1,0 +1,36 @@
+#
+# Run the application using docker-compose
+#
+
+
+version: '2'
+
+services:
+  # Redis is used for pub/sub
+  redis:
+    image: redis:3-alpine
+    restart: always
+    command:
+      - --appendonly yes
+    volumes:
+      - ./.data/redis:/data
+  # InfluxDB
+  influxdb:
+    image: influxdb:0.13-alpine
+    restart: always
+    volumes:
+      - ./.data/influxdb:/var/lib/influxdb
+  # Scoreboard Application
+  scoreboard:
+    image: quay.io/thisissoon/fm-scoreboard:latest
+    restart: always
+    ports:
+      - 5000:5000
+    depends_on:
+      - redis
+      - influxdb
+    environment:
+      SCOREBOARD_INFLUXDB_ADDRESS: "http://influxdb:8086"
+      SCOREBOARD_INFLUXDB_DB: "soon_fm_scoreboard"
+      SCOREBOARD_REDIS_ADDRESS: "redis:6379"
+      SCOREBOARD_HTTP_LISTEN: "0.0.0.0:5000"

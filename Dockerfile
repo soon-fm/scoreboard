@@ -16,5 +16,8 @@ COPY ${BIN_DIR}/${BIN_NAME} ${BUILD_DEST}
 # Volumes
 VOLUME ["/etc/scoreboard", "/var/log/scoreboard"]
 
+# Expose 5000
+EXPOSE 5000
+
 # Set our Application Entrypoint
 ENTRYPOINT ["scoreboard"]

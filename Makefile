@@ -37,5 +37,5 @@ darwin64:
 # Docker Image
 #
 
-image: all
+image: bin_dir linux64
 	docker build --build-arg BIN_DIR=$(BIN_DIR) --build-arg BIN_NAME=linux64_$(BIN_NAME) --force-rm -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
