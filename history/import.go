@@ -40,7 +40,7 @@ func Import(path string) error {
 			if err != nil {
 				return err
 			}
-			if err := sess.Write(score); err != nil {
+			if err := sess.Write(db.NewScore(record.User, 1, t)); err != nil {
 				return err
 			}
 		}
