@@ -43,6 +43,7 @@ func ScoresRouter() *chi.Mux {
 	router := chi.NewRouter()
 	// Middleare for this route
 	router.Use(InfluxDBMiddleware)
+	router.Use(APIMiddleware)
 	// Handlers
 	router.Get("/week", ScoresWeek)
 	return router

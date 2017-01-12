@@ -8,13 +8,15 @@ import (
 
 	"github.com/nvellon/hal"
 
+	"scoreboard/api"
 	"scoreboard/db"
 	"scoreboard/scores"
 )
 
 type Score struct {
-	User  string `json:"user"`
-	Score int64  `json:"score"`
+	ID          string `json:"id"`
+	DisplayName string `json:"displayName"`
+	Score       int64  `json:"score"`
 }
 
 type ScoreBoard struct {
@@ -36,10 +38,16 @@ func ScoresWeek(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	sort.Sort(results) // Sort the results so they are in order
+	sort.Sort(sort.Reverse(results)) // Sort the results so they are in order
 	sb := ScoreBoard{Scores: make([]Score, len(results))}
+	api := ctx.Value("api").(*api.Client)
 	for i, result := range results {
-		sb.Scores[i] = Score{result.User, result.Score}
+		user, err := api.User(result.User)
+		if err != nil {
+			log.WithError(err).WithField("user", result.User).Error("failed to query api for user")
+			continue
+		}
+		sb.Scores[i] = Score{result.User, user.DisplayName, result.Score}
 	}
 	j, err := json.Marshal(hal.NewResource(sb, r.URL.String()))
 	if err != nil {

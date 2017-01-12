@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"net/http"
+	"scoreboard/api"
 	"scoreboard/db"
 )
 
@@ -23,6 +24,14 @@ func InfluxDBMiddleware(next http.Handler) http.Handler {
 		}
 		defer client.Close()
 		ctx := context.WithValue(r.Context(), "influxdb", client)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func APIMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		client := api.New(api.NewConfig())
+		ctx := context.WithValue(r.Context(), "api", client)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

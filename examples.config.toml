@@ -30,3 +30,8 @@ password = "password" # Optional Password - omit of not required
 # HTTP API Configuration
 [http]
 listen = "0.0.0.0:5000" # Optional listen address, defaults to :5000
+
+# SOON_ FM API
+[api]
+host = "api.thisissoon.fm" # SOON_ FM API Address
+scheme = "https" # SOON_ FM API Protocol
