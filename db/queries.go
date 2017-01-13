@@ -27,7 +27,7 @@ func weekdayTimeRange(date time.Time) (mon time.Time, fri time.Time) {
 	}
 	fri = date
 	for fri.Weekday() != time.Friday {
-		fri = fri.AddDate(0, 0, 1)
+		fri = fri.AddDate(0, 0, 1).Add(time.Hour * 24)
 	}
 	return mon, fri
 }
