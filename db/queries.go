@@ -27,9 +27,9 @@ func weekdayTimeRange(date time.Time) (mon time.Time, fri time.Time) {
 	}
 	fri = date
 	for fri.Weekday() != time.Friday {
-		fri = fri.AddDate(0, 0, 1).Add(time.Hour * 24)
+		fri = fri.AddDate(0, 0, 1)
 	}
-	return mon, fri
+	return mon, fri.AddDate(0, 0, 1)
 }
 
 var scoresByWeekQry = `SELECT SUM("value") AS total
