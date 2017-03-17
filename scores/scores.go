@@ -3,6 +3,7 @@ package scores
 import (
 	"encoding/json"
 	"errors"
+	"time"
 
 	"scoreboard/db"
 )
@@ -22,8 +23,8 @@ func (s Scores) Swap(a, b int)      { s[a], s[b] = s[b], s[a] }
 func (s Scores) Less(a, b int) bool { return s[a].Score < s[b].Score }
 
 // Returns the summed user scores for the week
-func ThisWeek(queryer db.Queryer) (Scores, error) {
-	result, err := db.ScoresByWeek(queryer)
+func ByWeek(queryer db.Queryer, date time.Time) (Scores, error) {
+	result, err := db.ScoresByWeek(queryer, date)
 	if err != nil {
 		return nil, err
 	}

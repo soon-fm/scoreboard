@@ -38,9 +38,8 @@ WHERE time >= '%s'
 	AND time <= '%s'
 GROUP BY "user";`
 
-func ScoresByWeek(q Queryer) ([]influxdb.Result, error) {
-	now := time.Now().UTC()
-	date := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
+func ScoresByWeek(q Queryer, t time.Time) ([]influxdb.Result, error) {
+	date := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.Local)
 	mon, fri := weekdayTimeRange(date)
 	qry := fmt.Sprintf(scoresByWeekQry, mon.Format(time.RFC3339), fri.Format(time.RFC3339))
 	return q.Query(qry)

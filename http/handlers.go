@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"reflect"
 	"sort"
+	"time"
 
 	"github.com/nvellon/hal"
 
@@ -14,8 +15,9 @@ import (
 )
 
 type Score struct {
-	ID          string `json:"id"`
 	DisplayName string `json:"displayName"`
+	ID          string `json:"id"`
+	Position    int    `json:"position"`
 	Score       int64  `json:"score"`
 }
 
@@ -32,7 +34,12 @@ func ScoresWeek(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	results, err := scores.ThisWeek(queryer)
+	dateStr := r.URL.Query().Get("date")
+	date, err := time.Parse(time.RFC3339, dateStr)
+	if err != nil {
+		date = time.Now().UTC()
+	}
+	results, err := scores.ByWeek(queryer, date)
 	if err != nil {
 		log.WithError(err).Error("failed to get scores")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -47,7 +54,12 @@ func ScoresWeek(w http.ResponseWriter, r *http.Request) {
 			log.WithError(err).WithField("user", result.User).Error("failed to query api for user")
 			continue
 		}
-		sb.Scores[i] = Score{result.User, user.DisplayName, result.Score}
+		sb.Scores[i] = Score{
+			DisplayName: user.DisplayName,
+			ID:          result.User,
+			Position:    i + 1,
+			Score:       result.Score,
+		}
 	}
 	j, err := json.Marshal(hal.NewResource(sb, r.URL.String()))
 	if err != nil {
