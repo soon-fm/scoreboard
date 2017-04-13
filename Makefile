@@ -2,7 +2,7 @@ BIN_DIR					?= ./.bin
 BIN_NAME				?= scoreboard
 BUILD_TIME				?= $(shell date +%s)
 VERSION					?= $(shell git rev-parse HEAD)
-DOCKER_IMAGE			?= quay.io/thisissoon/fm-scoreboard
+DOCKER_IMAGE			?= gcr.io/soon-fm-production/scoreboard
 DOCKER_TAG				?= latest
 VERSION_BUILD_FLAG		?= -X scoreboard/version.buildTime=${BUILD_TIME}
 BUILDTIME_BUILD_FLAG 	?= -X scoreboard/version.version=${VERSION}
@@ -35,3 +35,10 @@ darwin64:
 
 image: linux64
 	docker build --build-arg BIN_DIR=$(BIN_DIR) --build-arg BIN_NAME=linux64_$(BIN_NAME) --force-rm -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
+
+#
+# Kubernetes
+#
+
+k8s:
+	cat k8s.yml | sed 's#'\$$TAG'#$(DOCKER_TAG)#g' | kubectl apply -f -

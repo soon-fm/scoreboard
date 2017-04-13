@@ -1,0 +1,116 @@
+#
+# Kubernetes Deployment
+#
+
+# Scoreboard Configuration
+# The Scoreboard application runs on port 5000 with an Nginx proxy
+# forwarding port 80 requests
+# All dependant services are routed locally
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scoreboard-config
+  labels:
+    app: scoreboard
+    tier: backend
+    type: config
+data:
+  scoreboard.conf: |
+    server {
+        listen 80;
+        location / {
+            proxy_pass          http://localhost:5000;
+            proxy_set_header    Host            $host;
+            proxy_set_header    X-Real-IP       $remote_addr;
+            proxy_set_header    X-Forwarded-for $remote_addr;
+        }
+    }
+  config.toml: |
+    # Logging Configuration
+    [log]
+    level = "debug" # Logging verbosity (debug, info, warn, error)
+    format = "logstash" # Logging format (text, json, logstash)
+    console_output = true # Enable or disable console log output
+    # Logstash Configuration
+    [logstash]
+    type = "scoreboard" # Override logstash type
+    # Redis Connection Configuration
+    [redis]
+    address = "redis:6379"  # Address of redis server in host:port format
+    # Influx DB Connection Configuration
+    [influxdb]
+    address = "http://scoreboard-influxdb.influxdb:8086" # Required Influx DB HTTP API address
+    db = "soon_fm_scoreboard" # Required DB Name
+    # HTTP API Configuration
+    [http]
+    listen = "0.0.0.0:5000" # Optional listen address, defaults to :5000
+    # SOON_ FM API Configuration
+    [api]
+    host = "api" # Local internal address
+    scheme = "http" # SOON_ FM API Protocol
+# EOF
+---
+# Scoreboard Servcice for Internal Routing
+apiVersion: v1
+kind: Service
+metadata:
+  name: scoreboard
+  labels:
+    app: scoreboard
+    tier: backend
+    type: service
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: scoreboard
+    tier: backend
+    type: deployment
+# EOF
+---
+# Scoreboard Deployment
+# Runs the scoreboard application fronted by an Nginx
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: scoreboard
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: scoreboard
+        tier: backend
+        type: deployment
+    spec:
+      # Volumes
+      volumes:
+      - name: scoreboard-config-volume
+        configMap:
+          name: scoreboard-config
+      # Containers
+      containers:
+      # Nginx Container
+      - name: nginx
+        image: gcr.io/soon-fm-production/nginx:1.10.3
+        resources:
+          requests:
+            memory: "10Mi"
+        volumeMounts:
+        - name: scoreboard-config-volume
+          mountPath: /etc/nginx/conf.d
+        ports:
+        - containerPort: 80
+      # Go Application
+      - name: scoreboard
+        image: gcr.io/soon-fm-production/scoreboard:$TAG
+        resources:
+          requests:
+            memory: "60Mi"
+        volumeMounts:
+        - name: scoreboard-config-volume
+          mountPath: /etc/scoreboard
+# EOF
+---
