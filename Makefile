@@ -37,6 +37,13 @@ image: linux64
 	docker build --build-arg BIN_DIR=$(BIN_DIR) --build-arg BIN_NAME=linux64_$(BIN_NAME) --force-rm -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
 
 #
+# Test
+#
+
+test:
+	go test -v -cover $(shell go list ./... | grep -v ./vendor/)
+
+#
 # Kubernetes
 #
 
