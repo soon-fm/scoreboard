@@ -108,7 +108,7 @@ spec:
         image: gcr.io/soon-fm-production/scoreboard:$TAG
         resources:
           requests:
-            memory: "60Mi"
+            memory: "10Mi"
         volumeMounts:
         - name: scoreboard-config-volume
           mountPath: /etc/scoreboard
