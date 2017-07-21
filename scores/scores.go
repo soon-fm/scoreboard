@@ -5,6 +5,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/influxdata/influxdb/models"
+
 	"scoreboard/db"
 )
 
@@ -22,18 +24,9 @@ func (s Scores) Len() int           { return len(s) }
 func (s Scores) Swap(a, b int)      { s[a], s[b] = s[b], s[a] }
 func (s Scores) Less(a, b int) bool { return s[a].Score < s[b].Score }
 
-// Returns the summed user scores for the week
-func ByWeek(queryer db.Queryer, date time.Time) (Scores, error) {
-	result, err := db.ScoresByWeek(queryer, date)
-	if err != nil {
-		return nil, err
-	}
-	if len(result) == 0 {
-		return nil, errors.New("no results returned")
-	}
-	series := result[0].Series
-	scores := make([]Score, len(series))
-	for x, row := range series {
+func processScores(rows []models.Row) Scores {
+	scores := make([]Score, len(rows))
+	for x, row := range rows {
 		user, ok := row.Tags["user"]
 		if !ok {
 			continue
@@ -48,5 +41,28 @@ func ByWeek(queryer db.Queryer, date time.Time) (Scores, error) {
 			}
 		}
 	}
-	return scores, nil
+	return scores
+}
+
+// Returns the summed user scores for the week
+func ByWeek(queryer db.Queryer, date time.Time) (Scores, error) {
+	result, err := db.ScoresByWeek(queryer, date)
+	if err != nil {
+		return nil, err
+	}
+	if len(result) == 0 {
+		return nil, errors.New("no results returned")
+	}
+	return processScores(result[0].Series), nil
+}
+
+func ByYear(queryer db.Queryer, date time.Time) (Scores, error) {
+	result, err := db.ScoresByYear(queryer, date)
+	if err != nil {
+		return nil, err
+	}
+	if len(result) == 0 {
+		return nil, errors.New("no results returned")
+	}
+	return processScores(result[0].Series), nil
 }

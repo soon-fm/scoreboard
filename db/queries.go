@@ -32,7 +32,7 @@ func weekdayTimeRange(date time.Time) (mon time.Time, fri time.Time) {
 	return mon, fri.AddDate(0, 0, 1)
 }
 
-var scoresByWeekQry = `SELECT SUM("value") AS total
+var scoresBetweenDateQry = `SELECT SUM("value") AS total
 FROM "scores"
 WHERE time >= '%s'
 	AND time <= '%s'
@@ -41,6 +41,17 @@ GROUP BY "user";`
 func ScoresByWeek(q Queryer, t time.Time) ([]influxdb.Result, error) {
 	date := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.Local)
 	mon, fri := weekdayTimeRange(date)
-	qry := fmt.Sprintf(scoresByWeekQry, mon.Format(time.RFC3339), fri.Format(time.RFC3339))
+	qry := fmt.Sprintf(scoresBetweenDateQry, mon.Format(time.RFC3339), fri.Format(time.RFC3339))
+	return q.Query(qry)
+}
+
+func ScoresByYear(q Queryer, t time.Time) ([]influxdb.Result, error) {
+	jan := time.Date(t.Year(), time.January, 1, 0, 0, 0, 0, time.Local)
+	dec := time.Date(t.Year(), time.December, 31, 24, 0, 0, 0, time.Local)
+	qry := fmt.Sprintf(
+		scoresBetweenDateQry,
+		jan.Format(time.RFC3339),
+		dec.Format(time.RFC3339),
+	)
 	return q.Query(qry)
 }

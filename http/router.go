@@ -46,5 +46,6 @@ func ScoresRouter() *chi.Mux {
 	router.Use(APIMiddleware)
 	// Handlers
 	router.Get("/week", ScoresWeek)
+	router.Get("/year", ScoresYear)
 	return router
 }
