@@ -15,8 +15,10 @@ import (
 )
 
 type Score struct {
-	DisplayName string `json:"displayName"`
 	ID          string `json:"id"`
+	DisplayName string `json:"displayName"`
+	GivenName   string `json:"givenName"`
+	FamilyName  string `json:"familyName"`
 	Position    int    `json:"position"`
 	Score       int64  `json:"score"`
 }
@@ -55,8 +57,10 @@ func ScoresWeek(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		sb.Scores[i] = Score{
-			DisplayName: user.DisplayName,
 			ID:          result.User,
+			DisplayName: user.DisplayName,
+			GivenName:   user.GivenName,
+			FamilyName:  user.FamilyName,
 			Position:    i + 1,
 			Score:       result.Score,
 		}
