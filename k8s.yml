@@ -97,8 +97,8 @@ spec:
         image: gcr.io/soon-fm-production/nginx:1.10.3
         resources:
           requests:
-            cpu: 0,
-            memory: "10Mi"
+            cpu: 0 # we arn't CPU intensive
+            memory: 10Mi
         volumeMounts:
         - name: scoreboard-config-volume
           mountPath: /etc/nginx/conf.d
@@ -109,8 +109,8 @@ spec:
         image: gcr.io/soon-fm-production/scoreboard:$TAG
         resources:
           requests:
-            cpu: 0,
-            memory: "10Mi"
+            cpu: 0 # we arn't CPU intensive
+            memory: 10Mi
         volumeMounts:
         - name: scoreboard-config-volume
           mountPath: /etc/scoreboard
